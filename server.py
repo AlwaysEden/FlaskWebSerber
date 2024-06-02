@@ -1,11 +1,11 @@
-# from flask import Flask, jsonify
+from flask import Flask, jsonify
 from datetime import datetime
 from typing import List, Dict
 from typing import Optional
 import json
 
 
-# app = Flask(__name__)
+app = Flask(__name__)
 
 
 # User 객체들을 담을 리스트 생성
@@ -132,21 +132,31 @@ else:
     
 
 
+@app.route('/status/inventory', methods=['GET'])
+def get_inventory():
+    # 요청 파라미터에서 user_id를 가져옴
+    target_user_id = request.args.get('user_id')
+    
+    # user_id가 제공되지 않았을 경우 에러 응답
+    if not target_user_id:
+        return jsonify({"error": "No user_id provided."}), 400
+    
+    # 특정 user_id를 찾음
+    target_user = find_user_by_id(user_list, target_user_id)
+    
+    if target_user:
+        # 사용자의 아이템 목록과 현재 장착된 아이템을 JSON 형식으로 반환
+        data = {
+            # "user_id": target_user.user_id,
+            "items": [item.__dict__ for item in target_user.items],  # 각 아이템 객체의 속성을 딕셔너리로 변환
+            "equipped_item": target_user.equipped_item.__dict__ if target_user.equipped_item else None  # 현재 장착된 아이템의 속성을 딕셔너리로 변환
+        }
+        return jsonify(data)
+    else:
+        return jsonify({"error": f"User with user_id '{target_user_id}' not found."}), 404
 
-
-# @app.route('/api/data', methods=['GET'])
-# def get_data():
-#     # 반환할 데이터
-#     data = {
-#         "name": "Alice",
-#         "age": 30,
-#         "city": "Wonderland"
-#     }
-#     # jsonify 함수를 사용하여 JSON 응답 생성
-#     return jsonify(data)
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
     
 
 
