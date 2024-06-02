@@ -6,6 +6,10 @@ from typing import List, Dict
 # app = Flask(__name__)
 
 
+# User 객체들을 담을 리스트 생성
+user_list = []
+
+
 class Level:
     def __init__(self, level_id: int, required_exp: int):
         self.id = level_id
@@ -48,6 +52,14 @@ class User:
         return (f"User(user_id={self.user_id}, login_info={self.login_info}, registered_amount={self.registered_amount}, "
                 f"items={self.items}, level={self.level}, equipped_item={self.equipped_item}, exp={self.exp}, gold={self.gold}, "
                 f"last_connection={self.last_connection}, creation_time={self.creation_time})")
+        
+        
+# 특정 user_id를 찾을 함수 정의
+def find_user_by_id(user_list, target_id):
+    for user in user_list:
+        if user.user_id == target_id:
+            return user
+    return None
 
 # 예제 사용
 level1 = Level(level_id=1, required_exp=100)
@@ -62,7 +74,20 @@ user1.set_equipped_item(item1)
 user1.exp = 150
 user1.gold = 1000
 
-print(user1)
+user2 = User(user_id="user2", login_info="user2_login", registered_amount=60.0)
+user3 = User(user_id="user3", login_info="user3_login", registered_amount=70.0)
+
+user_list.append(user1)
+user_list.append(user2)
+user_list.append(user3)
+
+# 특정 user_id를 찾아서 출력
+target_user_id = "user123"
+target_user = find_user_by_id(user_list, target_user_id)
+if target_user:
+    print(target_user)
+else:
+    print(f"User with user_id '{target_user_id}' not found.")
 
 
 # @app.route('/api/data', methods=['GET'])
