@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from datetime import datetime
 from typing import List, Dict
 from typing import Optional
+import random
 
 
 app = Flask(__name__)
@@ -67,10 +68,14 @@ class User:
 #print(user1)
 
 def find_user_by_id(user_list, target_id):
-    for user in user_list:
-        if user.user_id == target_id:
-            return user
-    return None
+	for user in user_list:
+		if user.user_id == target_id:
+			return user
+	return None
+
+def random_generator(min_value, max_value, num_values):
+	random_values = random.randint(min_value, max_value)
+	return random_values
 
 @app.route('/status/changeEquipment', methods=['POST']) 
 def change_Equipment(): 
@@ -86,30 +91,33 @@ def change_Equipment():
 
 @app.route('/status/inventory', methods=['GET']) #TODO: Search for user with userID
 def get_inventory():
-	userID = request.args.get('userID')
+	global user_list
+	userID = int(request.args.get('userID'))
 
-	item1 = Item(item_id=101, amount=2)
-	item2 = Item(item_id=102, amount=5)
-
-	user1 = User(user_id="user123", login_info="user123_login", registered_amount=50.0)
-	user1.add_item(item1)
-	user1.add_item(item2)
-	user1.set_equipped_item(item1)
-	user_list.append(user1)
 	target_user = find_user_by_id(user_list, userID)
 	if target_user:
 		items_json = [{"amount": item.amount, "id": item.id} for item in target_user.items]
 		data = {
 			"item": items_json,
-			"equipped_item": 0
+			"equipped_item": target_user.equipped_item
 		}
 		return jsonify(data)
 	else:
 		return ({"error":"User not found"}),404
 
 
+@app.route('/login/create', methods=['GET']) 
+def create_account(): 
+	global user_list
+	userID = request.args.get('userID')
+	random_ints = random_generator(1, 100000000000, 1)
+	user1=User(user_id=random_ints, login_info="user123_login", registered_amount=50.0)
+	user_list.append(user1)
+		
+	data = {
+		"userID": random_ints
+	}
+	return jsonify(data)
+
 if __name__ == '__main__':
-     app.run(debug=True)
-    
-
-
+     app.run(debug=True, use_reloader=False)

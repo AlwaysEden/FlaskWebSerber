@@ -1,11 +1,12 @@
 import requests
 
 # 서버 URL과 엔드포인트
+#url = "http://127.0.0.1:5000/login/create"
 url = "http://127.0.0.1:5000/status/inventory"
 
 # 요청할 때 보낼 파라미터
 params = {
-    "userID": "user123"
+   "userID":24028616486
 }
 
 # GET 요청 보내기
