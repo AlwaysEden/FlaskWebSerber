@@ -151,8 +151,9 @@ def get_inventory():
         data = {
             # "user_id": target_user.user_id,
             "items": [item.__dict__ for item in target_user.items],  # 각 아이템 객체의 속성을 딕셔너리로 변환
-            "equipped_item": target_user.equipped_item.__dict__ if target_user.equipped_item else None  # 현재 장착된 아이템의 속성을 딕셔너리로 변환
+            "equipped_item": target_user.equipped_item.id if target_user.equipped_item else None  # 현재 장착된 아이템의 ID를 반환
         }
+        
         return jsonify(data)
     else:
         return jsonify({"error": f"User with user_id '{target_user_id}' not found."}), 404
@@ -193,7 +194,7 @@ def change_equipment():
     return jsonify({"status": 0})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
     
 
 
