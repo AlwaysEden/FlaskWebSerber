@@ -95,11 +95,18 @@ class User:
         
         
 # 특정 user_id를 찾을 함수 정의
-def find_user_by_id(user_list, target_id):
+def find_user_by_id(target_id):
+    global user_list
     for user in user_list:
         if user.user_id == target_id:
             return user
     return None
+
+# return random number
+def random_generator(min_value, max_value, num_values):
+    random_values = random.randint(min_value, max_value)
+    return random_values
+
 
 # 예제 사용
 level1 = Level(level_id=1, required_exp=100)
@@ -121,9 +128,9 @@ user_list.append(user1)
 user_list.append(user2)
 user_list.append(user3)
 
-# 특정 user_id를 찾아서 출력
-target_user_id = "user123"
-target_user = find_user_by_id(user_list, target_user_id)
+## 특정 user_id를 찾아서 출력
+# target_user_id = "user123"
+# target_user = find_user_by_id(target_user_id)
 # if target_user:
 #     print(target_user.items)
 #     print(target_user.equipped_item)
@@ -145,7 +152,7 @@ def get_inventory():
         return jsonify({"error": "No user_id provided."}), 400
     
     # 특정 user 객체를 찾음
-    target_user = find_user_by_id(user_list, target_user_id)
+    target_user = find_user_by_id(target_user_id)
    
     if target_user:
         # 사용자의 아이템 목록과 현재 장착된 아이템을 JSON 형식으로 반환
@@ -175,7 +182,7 @@ def change_equipment():
         return jsonify({"error": "No target_equip_id provided."}), 400
     
     # 특정 user 객체를 찾음
-    target_user = find_user_by_id(user_list, target_user_id)
+    target_user = find_user_by_id(target_user_id)
     
     # user가 존재하지 않는 경우 에러 응답
     if not target_user:
@@ -193,6 +200,27 @@ def change_equipment():
     print(target_user.equipped_item)
     
     return jsonify({"status": 0})
+
+
+@app.route('/login/create', methods=['GET'])
+def create_account():
+    global user_list
+    # userID = request.args.get('userID')
+    random_ints = random_generator(1, 100000000000, 1)
+    user1 = User(user_id=random_ints, login_info="user4_login", registered_amount=540.0)
+    print(user_list)
+
+    user_list.append(user1)
+
+    print(user_list)
+
+    data = {
+        "userID": random_ints
+    }
+    return jsonify(data)
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=False)
