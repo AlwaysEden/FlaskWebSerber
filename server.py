@@ -82,7 +82,7 @@ user1 = User(user_id="user123", login_info="user123_login", registered_amount=50
 user1.add_item(item1)
 user1.add_item(item2)
 user1.set_level(level1)
-user1.set_equipped_item(item1)
+user1.set_equipped_item(101)
 user1.exp = 150
 user1.gold = 1000
 
@@ -98,7 +98,7 @@ target_user_id = "user123"
 target_user = find_user_by_id(user_list, target_user_id)
 if target_user:
     print(target_user)
-    target_user.set_equipped_item(101)
+    target_user.set_equipped_item(102)
     print(target_user)
 else:
     print(f"User with user_id '{target_user_id}' not found.")
