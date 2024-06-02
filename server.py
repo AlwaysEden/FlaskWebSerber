@@ -2,6 +2,7 @@
 from datetime import datetime
 from typing import List, Dict
 from typing import Optional
+import json
 
 
 # app = Flask(__name__)
@@ -16,16 +17,28 @@ class Level:
         self.id = level_id
         self.required_exp = required_exp
 
+    def to_json(self):
+        return {
+            "id": self.id,
+            "required_exp": self.required_exp
+        }
+
     def __repr__(self):
-        return f"Level(id={self.id}, required_exp={self.required_exp})"
+        return json.dumps(self.to_json(), indent=4)
 
 class Item:
     def __init__(self, item_id: int, amount: int):
         self.id = item_id
         self.amount = amount
 
+    def to_json(self):
+        return {
+            "id": self.id,
+            "amount": self.amount
+        }
+
     def __repr__(self):
-        return f"Item(id={self.id}, amount={self.amount})"
+        return json.dumps(self.to_json(), indent=4)
 
 class User:
     def __init__(self, user_id: str, login_info: str, registered_amount: float):
@@ -60,10 +73,22 @@ class User:
         else:
             print(f"Item with ID {item_id} not found in user's inventory.")
 
+    def to_json(self):
+        return {
+            "user_id": self.user_id,
+            "login_info": self.login_info,
+            "registered_amount": self.registered_amount,
+            "items": [item.to_json() for item in self.items],
+            "level": self.level.to_json() if self.level else None,
+            "equipped_item": self.equipped_item.to_json() if self.equipped_item else None,
+            "exp": self.exp,
+            "gold": self.gold,
+            "last_connection": self.last_connection.isoformat(),
+            "creation_time": self.creation_time.isoformat()
+        }
+
     def __repr__(self):
-        return (f"User(user_id={self.user_id}, login_info={self.login_info}, registered_amount={self.registered_amount}, "
-                f"items={self.items}, level={self.level}, equipped_item={self.equipped_item}, exp={self.exp}, gold={self.gold}, "
-                f"last_connection={self.last_connection}, creation_time={self.creation_time})")
+        return json.dumps(self.to_json(), indent=4)
         
         
 # 특정 user_id를 찾을 함수 정의
@@ -97,9 +122,10 @@ user_list.append(user3)
 target_user_id = "user123"
 target_user = find_user_by_id(user_list, target_user_id)
 if target_user:
-    print(target_user)
-    target_user.set_equipped_item(102)
-    print(target_user)
+    print(target_user.items)
+    print(target_user.equipped_item)
+    # target_user.set_equipped_item(102)
+    # print(target_user)
 else:
     print(f"User with user_id '{target_user_id}' not found.")
     
