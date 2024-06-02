@@ -1,6 +1,7 @@
 # from flask import Flask, jsonify
 from datetime import datetime
 from typing import List, Dict
+from typing import Optional
 
 
 # app = Flask(__name__)
@@ -45,8 +46,19 @@ class User:
     def set_level(self, level: Level):
         self.level = level
 
-    def set_equipped_item(self, item: Item):
-        self.equipped_item = item
+    def get_item_by_id(self, item_id: int) -> Optional[Item]:
+        for item in self.items:
+            if item.id == item_id:
+                return item
+        return None
+
+    def set_equipped_item(self, item_id: int):
+        item = self.get_item_by_id(item_id)
+        if item:
+            self.equipped_item = item
+            # print(f"Equipped item: {item}")
+        else:
+            print(f"Item with ID {item_id} not found in user's inventory.")
 
     def __repr__(self):
         return (f"User(user_id={self.user_id}, login_info={self.login_info}, registered_amount={self.registered_amount}, "
@@ -86,8 +98,14 @@ target_user_id = "user123"
 target_user = find_user_by_id(user_list, target_user_id)
 if target_user:
     print(target_user)
+    target_user.set_equipped_item(101)
+    print(target_user)
 else:
     print(f"User with user_id '{target_user_id}' not found.")
+    
+    
+
+
 
 
 # @app.route('/api/data', methods=['GET'])
