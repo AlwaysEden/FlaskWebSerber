@@ -4,11 +4,11 @@ import sys
 # 서버 URL과 엔드포인트
 url1 = "http://192.168.0.37:5000/login/create"
 url2 = "http://192.168.0.37:5000/status/inventory"
-url3 = "http://127.0.0.1:5000/status/changeEquipment"
+url3 = "http://192.168.0.37:5000/status/changeEquipment"
 
 # 요청할 때 보낼 파라미터
 params2 = {
-    "userID": 23682046541
+    "userID": 7310261853
 }
 
 params3 = {
@@ -30,4 +30,3 @@ elif arg1 == "3":
     
 # 응답 내용 출력
 print(response.json())
-    

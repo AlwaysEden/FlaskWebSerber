@@ -44,14 +44,14 @@ class Item:
         return json.dumps(self.to_json(), indent=4)
 
 class User:
-    def __init__(self, user_id: str, level: int, registered_amount: float):
+    def __init__(self, user_id: str, level: int, registered_amount: float, equipped_weapon: int, equipped_armor: int ):
         self.user_id = user_id
         self.login_info: login = None
         self.registered_amount = registered_amount
         self.items: List[Item] = []
         self.level = level
-        self.equipped_weapon: Weapon = None
-        self.equipped_armor: Armor = None
+        self.equipped_weapon: Weapon = equipped_weapon
+        self.equipped_armor: Armor = equipped_armor
         self.exp = 0
         self.gold = 0
         self.last_connection = datetime.now()
@@ -147,8 +147,8 @@ def get_inventory():
         data = {
             # "user_id": target_user.user_id,
             "items": [item.__dict__ for item in target_user.items],  # 각 아이템 객체의 속성을 딕셔너리로 변환
-            "equipped_weapon": target_user.equipped_weapon.id if target_user.equipped_weapon else None,  # 현재 장착된 아이템의 ID를 반환
-            "equipped_armor": target_user.equipped_armor.id if target_user.equipped_armor else None  # 현재 장착된 아이템의 ID를 반환
+            "equipped_weapon": target_user.equipped_weapon if target_user.equipped_weapon else None,  # 현재 장착된 아이템의 ID를 반환
+            "equipped_armor": target_user.equipped_armor if target_user.equipped_armor else None  # 현재 장착된 아이템의 ID를 반환
         }
         
         return jsonify(data)
@@ -196,7 +196,7 @@ def create_account():
     global user_list
     # userID = request.args.get('userID')
     random_ints = random_generator(1, 100000000000, 1)
-    user1 = User(user_id=random_ints, level=1, registered_amount=540.0)
+    user1 = User(user_id=random_ints, level=1, registered_amount=540.0, equipped_weapon=1, equipped_armor=10)
     print(user_list)
 
     user_list.append(user1)
