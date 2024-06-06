@@ -44,13 +44,14 @@ class Item:
         return json.dumps(self.to_json(), indent=4)
 
 class User:
-    def __init__(self, user_id: str, login_info: str, registered_amount: float):
+    def __init__(self, user_id: str, level: int, registered_amount: float):
         self.user_id = user_id
-        self.login_info = login_info
+        self.login_info: login = None
         self.registered_amount = registered_amount
         self.items: List[Item] = []
-        self.level: Level = None
-        self.equipped_item: Item = None
+        self.level = level
+        self.equipped_weapon: Weapon = None
+        self.equipped_armor: Armor = None
         self.exp = 0
         self.gold = 0
         self.last_connection = datetime.now()
@@ -68,13 +69,19 @@ class User:
                 return item
         return None
 
-    def set_equipped_item(self, item_id: int):
-        item = self.get_item_by_id(item_id)
-        if item:
-            self.equipped_item = item
+    def set_equipped_item(self, weapon_id: int, armor_id: int):
+        weapon = self.get_item_by_id(weapon_id)
+        armor = self.get_item_by_id(armor_id)
+        if weapon:
+            self.equipped_weapon = weapon
             # print(f"Equipped item: {item}")
         else:
-            print(f"Item with ID {item_id} not found in user's inventory.")
+            print(f"Item with ID {weapon_id} not found in user's inventory.")
+        
+        if armor:
+            self.equipped_armor = armor
+        else:
+            print(f"Item with ID {armor_id} not found in user's inventory.")
 
     def to_json(self):
         return {
@@ -82,8 +89,9 @@ class User:
             "login_info": self.login_info,
             "registered_amount": self.registered_amount,
             "items": [item.to_json() for item in self.items],
-            "level": self.level.to_json() if self.level else None,
-            "equipped_item": self.equipped_item.to_json() if self.equipped_item else None,
+            "level": self.level if self.level else None,
+            "equipped_weapon": self.equipped_weapon if self.equipped_weapon else None,
+            "equipped_armor": self.equipped_armor if self.equipped_armor else None,
             "exp": self.exp,
             "gold": self.gold,
             "last_connection": self.last_connection.isoformat(),
@@ -108,25 +116,8 @@ def random_generator(min_value, max_value, num_values):
     return random_values
 
 
+
 # 예제 사용
-level1 = Level(level_id=1, required_exp=100)
-item1 = Item(item_id=101, amount=2)
-item2 = Item(item_id=102, amount=5)
-
-user1 = User(user_id="user123", login_info="user123_login", registered_amount=50.0)
-user1.add_item(item1)
-user1.add_item(item2)
-user1.set_level(level1)
-user1.set_equipped_item(101)
-user1.exp = 150
-user1.gold = 1000
-
-user2 = User(user_id="user2", login_info="user2_login", registered_amount=60.0)
-user3 = User(user_id="user3", login_info="user3_login", registered_amount=70.0)
-
-user_list.append(user1)
-user_list.append(user2)
-user_list.append(user3)
 
 ## 특정 user_id를 찾아서 출력
 # target_user_id = "user123"
@@ -138,14 +129,11 @@ user_list.append(user3)
 #     # print(target_user)
 # else:
 #     print(f"User with user_id '{target_user_id}' not found.")
-    
-    
-
 
 @app.route('/status/inventory', methods=['GET'])
 def get_inventory():
     # 요청 파라미터에서 user_id를 가져옴
-    target_user_id = request.args.get('userID')
+    target_user_id = int(request.args.get('userID'))
     
     # user_id가 제공되지 않았을 경우 에러 응답
     if not target_user_id:
@@ -159,7 +147,8 @@ def get_inventory():
         data = {
             # "user_id": target_user.user_id,
             "items": [item.__dict__ for item in target_user.items],  # 각 아이템 객체의 속성을 딕셔너리로 변환
-            "equipped_item": target_user.equipped_item.id if target_user.equipped_item else None  # 현재 장착된 아이템의 ID를 반환
+            "equipped_weapon": target_user.equipped_weapon.id if target_user.equipped_weapon else None,  # 현재 장착된 아이템의 ID를 반환
+            "equipped_armor": target_user.equipped_armor.id if target_user.equipped_armor else None  # 현재 장착된 아이템의 ID를 반환
         }
         
         return jsonify(data)
@@ -207,7 +196,7 @@ def create_account():
     global user_list
     # userID = request.args.get('userID')
     random_ints = random_generator(1, 100000000000, 1)
-    user1 = User(user_id=random_ints, login_info="user4_login", registered_amount=540.0)
+    user1 = User(user_id=random_ints, level=1, registered_amount=540.0)
     print(user_list)
 
     user_list.append(user1)
@@ -223,7 +212,7 @@ def create_account():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=False)
+    app.run(host='192.168.0.37',debug=True, use_reloader=False)
     
 
 
